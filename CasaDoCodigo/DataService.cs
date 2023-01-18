@@ -1,4 +1,5 @@
 ﻿using CasaDoCodigo.Models;
+using CasaDoCodigo.Repositories;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,31 +13,32 @@ namespace CasaDoCodigo
     {
 
         private readonly ApplicationContext _contexto;
+        private readonly IProdutoRepository _produtoRepository;
 
-        public DataService(ApplicationContext contexto)
+
+        public DataService(ApplicationContext contexto, IProdutoRepository produtoRepository)
         {
             _contexto = contexto;
+            _produtoRepository = produtoRepository;
         }
 
         public void InicializaDB()
         {
             _contexto.Database.EnsureCreated();
+
+            List<Livro> livros = GetLivros();
+
+            _produtoRepository.SaveProdutos(livros);
+        }
+
+
+        private static List<Livro> GetLivros()
+        {
             var json = File.ReadAllText("livros.json");
-
             var livros = JsonConvert.DeserializeObject<List<Livro>>(json);
-
-            foreach(var livro in livros)
-            {
-                _contexto.Set<Produto>().Add(new Produto(livro.Codigo, livro.Nome, livro.Preco));
-            }
-            _contexto.SaveChanges();
-        }      
+            return livros;
+        }
     }
 
-    class Livro
-    {
-        public string Codigo { get; set; }
-        public string Nome { get; set; }
-        public decimal Preco { get; set; }
-    }
+  
 }
