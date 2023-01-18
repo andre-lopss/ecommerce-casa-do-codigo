@@ -27,7 +27,9 @@ namespace CasaDoCodigo
             string connectionString = Configuration.GetConnectionString("Default");
             services.AddDbContext<ApplicationContext>(options =>
                                     options.UseSqlServer(connectionString));
+            services.AddTransient<IDataService, DataService>();
         }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
@@ -51,7 +53,8 @@ namespace CasaDoCodigo
                     template: "{controller=Pedido}/{action=Carrossel}/{id?}");
             });
 
-            serviceProvider.GetService<ApplicationContext>().Database.Migrate();
+            serviceProvider.GetService<DataService>().InicializaDB();
+
         }
     }
 }
