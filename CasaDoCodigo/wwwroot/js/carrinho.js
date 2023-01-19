@@ -34,7 +34,11 @@
             contentType: 'application/json',
             data: JSON.stringify(data)
         }).done(function (response) {
-            
+            let itemPedido = response.itemPedido;
+            let carrinhoViewModel = response.carrinhoViewModel;
+
+            console.log(JSON.stringify(itemPedido));
+            console.log(JSON.stringify(carrinhoViewModel));
         });
 
     }

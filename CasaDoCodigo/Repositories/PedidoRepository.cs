@@ -1,4 +1,5 @@
 ﻿using CasaDoCodigo.Models;
+using CasaDoCodigo.Models.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,9 +12,11 @@ namespace CasaDoCodigo.Repositories
     public class PedidoRepository : BaseRepository<Pedido>, IPedidoRepository
     {
         private readonly IHttpContextAccessor _contextAccessor;
-        public PedidoRepository(ApplicationContext contexto, IHttpContextAccessor contextAccessor) : base(contexto)
+        private readonly IItemPedidoRepository _itemPedidoRepository;
+        public PedidoRepository(ApplicationContext contexto, IHttpContextAccessor contextAccessor, IItemPedidoRepository itemPedidoRepository) : base(contexto)
         {
             _contextAccessor = contextAccessor;
+            _itemPedidoRepository = itemPedidoRepository;
         }
 
         public void AddItem(string codigo)
@@ -68,6 +71,23 @@ namespace CasaDoCodigo.Repositories
         private void SetPedidoId(int pedidoId)
         {
             _contextAccessor.HttpContext.Session.SetInt32("pedidoId", pedidoId);
+        }
+
+        public UpdateQuantidadeResponse UpdateQuantidade(ItemPedido itemPedido)
+        {
+            var itemPedidoDb = _itemPedidoRepository.GetItemPedido(itemPedido.Id);
+            
+            if (itemPedidoDb != null)
+            {
+                itemPedidoDb.AtualizaQuantidade(itemPedido.Quantidade);
+                _contexto.SaveChanges();
+
+                var carrinhoViewModel = new CarrinhoViewModel(GetPedido().Itens);
+
+                return new UpdateQuantidadeResponse(itemPedidoDb, carrinhoViewModel);
+            }
+
+            throw new ArgumentException("Item Pedido não encontrado.");
         }
     }
 }
