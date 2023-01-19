@@ -91,8 +91,10 @@
     <script type="text/javascript">
         function clickIncremento(btn)
         {
-            var itemId = $(btn).attr('item-id');
-            alert(itemId)
+            var linhaDoItem = $(btn).parents('[item-id]')
+            var itemId = $(linhaDoItem).attr('item-id');
+            var novaQuantidade = $(linhaDoItem).find('input').val();
+            alert(novaQuantidade)
         }
 
     </script>
