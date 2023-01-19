@@ -1,5 +1,6 @@
 ﻿using CasaDoCodigo.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,11 +8,6 @@ using System.Threading.Tasks;
 
 namespace CasaDoCodigo.Repositories
 {
-    public interface IPedidoRepository
-    {
-        Pedido GetPedido();
-        void AddItem(string codigo);
-    }
     public class PedidoRepository : BaseRepository<Pedido>, IPedidoRepository
     {
         private readonly IHttpContextAccessor _contextAccessor;
@@ -48,7 +44,11 @@ namespace CasaDoCodigo.Repositories
         public Pedido GetPedido()
         {
             var pedidoId = GetPedidoId();
-            var pedido = dbSet.Where(x => x.Id == pedidoId).SingleOrDefault();
+            var pedido = dbSet
+                            .Include(p => p.Itens )
+                                .ThenInclude(i => i.Produto)
+                            .Where(x => x.Id == pedidoId)
+                            .SingleOrDefault();
 
             if(pedido == null)
             {

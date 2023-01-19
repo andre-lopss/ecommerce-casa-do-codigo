@@ -28,7 +28,7 @@ namespace CasaDoCodigo.Controllers
         {
             if (!string.IsNullOrEmpty(codigo))
             {
-                PedidoRepository.AddItem(codigo);
+                _pedidoRepository.AddItem(codigo);
             }
             Pedido pedido = _pedidoRepository.GetPedido();
             return View(pedido.Itens);
