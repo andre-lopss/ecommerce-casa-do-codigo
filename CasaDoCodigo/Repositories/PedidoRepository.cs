@@ -13,10 +13,12 @@ namespace CasaDoCodigo.Repositories
     {
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly IItemPedidoRepository _itemPedidoRepository;
-        public PedidoRepository(ApplicationContext contexto, IHttpContextAccessor contextAccessor, IItemPedidoRepository itemPedidoRepository) : base(contexto)
+        private readonly ICadastroRepository _cadastroRepository;
+        public PedidoRepository(ApplicationContext contexto, IHttpContextAccessor contextAccessor, IItemPedidoRepository itemPedidoRepository, ICadastroRepository cadastroRepository) : base(contexto)
         {
             _contextAccessor = contextAccessor;
             _itemPedidoRepository = itemPedidoRepository;
+            _cadastroRepository = cadastroRepository;
         }
 
         public void AddItem(string codigo)
@@ -92,6 +94,14 @@ namespace CasaDoCodigo.Repositories
             }
 
             throw new ArgumentException("Item Pedido não encontrado.");
+        }
+
+        public Pedido UpdateCadastro(Cadastro cadastro)
+        {
+            var pedido = GetPedido();
+            _cadastroRepository.Update(pedido.Cadastro.Id, cadastro);
+
+            return pedido;
         }
     }
 }
