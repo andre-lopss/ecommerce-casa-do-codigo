@@ -48,7 +48,9 @@ namespace CasaDoCodigo.Controllers
             }
             return View(pedido.Cadastro);
         }
-        public IActionResult Resumo()
+
+        [HttpPost]
+        public IActionResult Resumo(Cadastro cadastro)
         {
             Pedido pedido = _pedidoRepository.GetPedido();
             return View(pedido);
